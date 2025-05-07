@@ -1,0 +1,30 @@
+
+
+<!--begin::Alert-->
+<div n:foreach="$flashes as $flash" n:class="alert, $flash->type, d-flex, align-items-center, mt-5, mb-5">
+    <!--begin::Icon-->
+    {switch $flash->type}
+			{case "alert-danger"}
+			{default}
+				<i class="ki-duotone ki-shield-tick fs-2hx text-success me-4"><span class="path1"></span><span class="path2"></span></i>
+    {/switch}
+    <!--end::Icon-->
+
+    <!--begin::Wrapper-->
+    <div class="d-flex flex-column">
+        <!--begin::Title-->
+		{switch $flash->type}
+			{case "alert-danger"}
+				<h4 class="mb-1 text-danger">Messaggio di sistema</h4>
+			{default}
+				<h4 class="mb-1 text-dark">Messaggio di sistema</h4>
+		{/switch}
+        <!--end::Title-->
+
+        <!--begin::Content-->
+        <span>{$flash->message}</span>
+        <!--end::Content-->
+    </div>
+    <!--end::Wrapper-->
+</div>
+<!--end::Alert-->

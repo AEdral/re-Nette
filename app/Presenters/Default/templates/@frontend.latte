@@ -1,0 +1,86 @@
+
+<!DOCTYPE html>
+<html lang="it">
+	<!--begin::Head-->
+	<head>
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="" />
+        <meta name="author" content="" />
+        <title>Oracond.Export</title>
+
+        <title>{ifset title}{include title|stripHtml} | {/ifset}Applicativo {$appName}</title>
+
+		<!--link rel="shortcut icon" href="{$basePath}/assets/media/logos/pokeball-icon.png" /-->
+		<link rel="shortcut icon" href="{$basePath}/assets/media/logos/env-icon.ico" />
+
+        <link href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css" rel="stylesheet" />
+
+        <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+
+		<link href="{$basePath}/assets/plugins/global/plugins.bundle.css" rel="stylesheet" type="text/css" />
+		<link href="{$basePath}/assets/css/style.bundle.css" rel="stylesheet" type="text/css" />
+        <link href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css" rel="stylesheet" />
+
+		
+		<!-- script per datatables e jquery -->
+        <!--script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+		<link href="https://cdn.datatables.net/v/dt/dt-2.0.8/rr-1.5.0/datatables.min.css" rel="stylesheet">
+        <script src="https://cdn.datatables.net/v/dt/dt-2.0.8/rr-1.5.0/datatables.min.js"></script-->
+           
+
+        <link rel=”stylesheet” href=”https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css” integrity=”sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh” crossorigin=”anonymous”>
+
+        <link href="{$basePath}/assets/css/styles.css" rel="stylesheet" />
+        
+	</head>
+	<!--end::Head-->
+	<!--begin::Body-->
+	<body id="kt_body" class="auth-bg">
+
+		<!--begin::Main-->
+		<div class="d-flex flex-column flex-root">
+			<!--begin::Frontend-->
+		
+			<div class="d-flex flex-column flex-lg-row flex-column-fluid">
+
+				
+                {include 'Common/leftBanner.latte'}
+
+				<div class="d-flex flex-column flex-lg-row-fluid">
+
+					{*include 'Common/flashes.latte'*}
+					
+					{include content}
+
+					
+					{include 'Common/footer.latte'}
+				</div>
+				<!--chiusa la parte destra della pagina-->
+				
+			</div>
+			<!--end::Frontend-->
+
+		</div>
+		<!--end::Main-->
+
+
+		<!--begin::Javascript-->
+		<script>var hostUrl = "/assets/";</script>
+		<!--begin::Global Javascript Bundle(mandatory for all pages)-->
+		<script src="{$basePath}/assets/plugins/global/plugins.bundle.js"></script>
+		<script src="{$basePath}/assets/js/scripts.bundle.js"></script>
+		<!--end::Global Javascript Bundle-->
+		<!--end::Javascript-->
+
+
+		<!--script src="https://nette.github.io/resources/js/3/netteForms.min.js"></script-->
+
+
+		{block scripts}
+		{/block}
+
+	</body>
+	<!--end::Body-->
+</html>

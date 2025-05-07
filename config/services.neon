@@ -1,5 +1,10 @@
 services:
-	- App\Core\RouterFactory::createRouter
+	- Nette\Security\MyAuthenticator(@database.remote.context)
+	- Nette\Security\MyAuthorizator(@database.remote.context)
+	- App\Router\RouterFactory::createRouter
+	- App\Models\RemoteModel(@database.remote.context)
+	- App\Presenters\LoginPresenter(%adminEmail%)
+	- App\Classes\MailManager(%mail%)
 
 
 search:

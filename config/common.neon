@@ -1,27 +1,56 @@
 parameters:
+	adminEmail:
 
+	mail:
+		# use SmtpMailer
+		smtp: FALSE		# (bool) defaults to false
+		host: ""		# (string)
+		port: 465		# (int)
+		username: ""	# (string)
+		password: ""	# (string)
+		timeout: 60		# (int)
+		secure: null	# (ssl|tls|null) defaults to null
+		clientHost: ""	# (string) defaults to $_SERVER['HTTP_HOST']
+		persistent: FALSE	# (bool) defaults to false
+
+http:
+	#proxy: 127.0.0.1
+	# headers that are sent with each request
+	headers:
+		X-Powered-By: "Studio Associato Juice di Capobianchi"
+		X-Content-Type-Options: nosniff
+		X-XSS-Protection: '1; mode=block'
 
 application:
-	errorPresenter:
-		4xx: Error:Error4xx
-		5xx: Error:Error5xx
-	mapping: App\Presentation\*\**Presenter
+	errorPresenter: Error
+	mapping:
+		*: App\*Module\Presenters\*Presenter
 
-
-database:
-	dsn: 'sqlite::memory:'
-	user:
-	password:
-
-
-latte:
-	strictTypes: yes
-	strictParsing: yes
-	extensions:
-		- App\Presentation\Accessory\LatteExtension
-
+session:
+	expiration: 14 days
+	autoStart: always
 
 di:
 	export:
-		parameters: no
+		parameters: yes
 		tags: no
+
+constants: 
+	APPURL: ''
+	APPNAME: ''
+	APPEMAIL: ''
+	USERSTABLE: ''
+	BANTABLE: ''
+	RECOVERYTABLE: ''
+	UPLOADSDIR: ''
+	DEBUG: TRUE
+	RUOLI:
+		admin: 'admin'
+		user: 'user'
+		guest: 'guest'
+		archivio: 'archivio'
+
+database:
+	dsn: 'mysql:host=127.0.0.1;dbname=test'
+	user:
+	password:
