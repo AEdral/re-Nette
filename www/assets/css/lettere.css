@@ -1,0 +1,9 @@
+body { 
+    font-size: 10pt; 
+    font-family: 'times';
+} 
+
+table, th, td { 
+    border: 1 solid #D3D3D3; 
+    border-collapse: collapse; 
+}

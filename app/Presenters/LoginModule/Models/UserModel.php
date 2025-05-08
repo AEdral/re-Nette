@@ -22,43 +22,33 @@ class UserModel {
     }
 
 
-    public function getAllUsers():array|null{
-        $table = $this->database->table(USERSTABLE);
-        return $table->fetchAll();
+    public function getUserByUsername(string $username): ?ActiveRow
+    {
+        return $this->database->table('users')->where('username', $username)->fetch();
     }
 
-    public function getUsersByRole($role):array|null{
-        $table = $this->database->table(USERSTABLE);
-        return $table->where('ruolo', $role)->fetchAll();
+    public function getUserByEmail(string $email): ?ActiveRow
+    {
+        return $this->database->table('users')->where('email', $email)->fetch();
     }
 
-    public function countUsersByRole($role){
-        $table = $this->database->query("SELECT count(id) as numero_utenti FROM ".USERSTABLE." WHERE ruolo = ?", $role);
-        return $table->fetch();
+    public function getUserById(int $id): ?ActiveRow
+    {
+        return $this->database->table('users')->where('id', $id)->fetch();
     }
 
-    public function getUserByEmail($email):ActiveRow|null{
-        $table = $this->database->table(USERSTABLE); 
-        return $table->where('email', $email)->fetch();
+    public function createUser(array $data): ActiveRow
+    {
+        return $this->database->table('users')->insert($data);
     }
 
-    public function getUserByUsername($username):ActiveRow|null{
-        $table = $this->database->table(USERSTABLE); 
-        return $table->where('utente', $username)->fetch();
-    }
-
-    public function getUserById($id):ActiveRow|null{
-        $table = $this->database->table(USERSTABLE); 
-        return $table->where('id', $id)->fetch();
-    }
-
-    public function updateUser($data):void{
-        $table = $this->database->table(USERSTABLE);
-        $table->where('id', $data['id'])->update($data);
-    }
-
-    public function getRoles(){
-        return RUOLI;
+    public function verifyPassword(string $username, string $password, Passwords $passwords): ?ActiveRow
+    {
+        $user = $this->getUserByUsername($username);
+        if ($user && $passwords->verify($password, $user->password)) {
+            return $user;
+        }
+        return null;
     }
 
 }
