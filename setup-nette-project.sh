@@ -106,7 +106,7 @@ fi
 
 # === 6. PERMESSI ===
 
-sudo chmod -R 777 "${PROJECT_PATH}"
+#sudo chmod -R 777 "${PROJECT_PATH}"
 
 # === 7. ABILITA SITO E RIAVVIA ===
 
