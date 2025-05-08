@@ -8,8 +8,8 @@ while [ -z "$APPNAME" ]; do
     read -p "Nome progetto (APPNAME): " APPNAME
 done
 
-read -p "Database DSN (DB_DNS): " DB_DNS
-read -p "Database User (DB_USER): " DB_USER
+read -p "Database DSN (DB_DNS): [opzionale]" DB_DNS
+read -p "Database User (DB_USER): [opzionale]: " DB_USER
 read -s -p "Database Password (DB_PASSWORD): " DB_PASSWORD
 echo
 read -p "Email (MAIL) [opzionale]: " MAIL
@@ -55,7 +55,7 @@ constants:
 		guest: 'guest'
 
 database:
-	remote:
+	default:
 		dsn: '${DB_DNS}'
 		user: '${DB_USER}' 
 		password: '${DB_PASSWORD}' 
