@@ -53,56 +53,58 @@ final class LoginPresenter extends Frontend {
 		return $form;
 	}
 
-	public function formLoginValidation(Form $form, stdClass $data) {
-		if (empty($data->utente)){
+	public function formLoginValidation(Form $form, $data) {
+		/*
+        if (empty($data->utente)){
 			$form['username']->addError('Campo obbligtorio.');
 		}
+        */
 	}
 
     public function formLoginSucceeded(Form $form, $data) {
-        // Log per monitorare i dati di input
-        bdump("Tentativo di login con username: {$data->utente} e password: {$data->password}");
+        bdump("Inizio esecuzione formLoginSucceeded");
     
         try {
-            // Esegui il login
-            $this->getUser()->login($data->utente, $data->password);
-            
-            // Controllo se il login è riuscito
-            if ($this->getUser()->isLoggedIn()) {
-                bdump("Login riuscito per l'utente: {$data->utente}");
-            } else {
-                bdump("Login non riuscito, l'utente non è stato autenticato.");
-                $form->addError('Credenziali non valide.');
-                return;
-            }
+            // Mostra i dati ricevuti dal form
+            bdump($data, 'Dati del form');
     
-            // Impostazione dell'autorizzazione
+            // Tentativo di login
+            $hashedPassword = $data["password"]; // ⚠️ Nota: se la password è in chiaro, NON è già hashata
+            bdump($hashedPassword, 'Password fornita');
+    
+            $this->getUser()->login($data["username"], $hashedPassword);
+            bdump("Login riuscito con username: {$data['username']}");
+    
+            // Imposta l'authorizator
             $authorizator = new MyAuthorizator();
             $this->getUser()->setAuthorizator($authorizator);
-            bdump("Autorizzazione impostata correttamente.");
+            bdump("Authorizator impostato");
     
-            // Recupera i dettagli dell'utente
+            // Recupera utente autenticato
             $currentUser = $this->userModel->getUserById($this->getUser()->identity->id);
+            bdump($currentUser, 'Utente autenticato');
     
-            // Log per monitorare l'utente attualmente autenticato
-            bdump("Utente autenticato: {$currentUser->username} con ruolo: {$currentUser->ruolo}");
+            // Ripristina richiesta precedente se presente
+            if ($this->requestedUrl) {
+                bdump($this->requestedUrl, 'Redirect verso richiesta precedente');
+                $this->restoreRequest($this->requestedUrl);
+            } else {
+                bdump("Nessuna richiesta precedente. Redirect a Home:default");
+                $this->redirect('Home:default');
+            }
     
-            // Gestione della richiesta precedente (se presente)
-            $this->restoreRequest($this->requestedUrl);
-            
-            // Reindirizza l'utente alla pagina richiesta o alla home
-            $this->redirect('Home:default');
-            
-        } catch (Nette\Security\AuthenticationException $e) {
-            // Log in caso di errore durante il login
+        } catch(Nette\Security\AuthenticationException $e) {
             bdump("Errore durante il login: " . $e->getMessage());
-            
-            // Aggiungi errori al form
+    
             $form->addError($e->getMessage());
             $form['username']->addError('');
             $form['password']->addError('');
         }
+    
+        bdump("Fine formLoginSucceeded");
     }
+    
+
     
 
 	//SIGN UP
@@ -149,7 +151,7 @@ final class LoginPresenter extends Frontend {
             return;
         }
 
-        $hashedPassword = $this->passwords->hash($data->password);
+        $hashedPassword = $data->password;
 
         // Crea il nuovo utente
         $this->userModel->createUser([

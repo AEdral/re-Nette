@@ -20,7 +20,7 @@ class MyAuthenticator implements Nette\Security\Authenticator {
 	}
 
 	public function authenticate(string $user, string $password): IIdentity {
-		$row = $this->database->table(USERSTABLE)->where('utente', $user)->fetch();
+		$row = $this->database->table(USERSTABLE)->where('username', $user)->fetch();
 		$password = addslashes($password); //escape degli apici nella password (test" -> test\")
 
 		if (!$row) { //utente non esiste
