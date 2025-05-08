@@ -7,7 +7,7 @@ use Nette\Database\Explorer;
 use Nette\Database\Row;
 
 
-class LocalModel {
+class DefaultModel {
     use Nette\SmartObject;
 
     private $database;

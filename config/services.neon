@@ -2,15 +2,13 @@ services:
 	- Nette\Security\MyAuthenticator(@database.default.context)
 	- Nette\Security\MyAuthorizator(@database.default.context)
 	- App\Router\RouterFactory::createRouter
-	- App\Models\RemoteModel(@database.default.context)
+	- App\Models\UserModel(@database.default.context)
+	- App\Models\DefaultModel(@database.default.context)
 	- App\Presenters\LoginPresenter(%adminEmail%)
 	- App\Classes\MailManager(%mail%)
-
 
 search:
 	-	in: %appDir%
 		classes:
-			- *Facade
 			- *Factory
-			- *Repository
-			- *Service
+			- *Facade

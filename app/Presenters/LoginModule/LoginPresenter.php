@@ -3,13 +3,10 @@
 namespace App\Presenters;
 
 use App\Classes\MailManager;
-use Contributte\FormsBootstrap\BootstrapForm;
 use Nette;
 use Nette\Application\UI\Form;
 use Nette\Security\MyAuthorizator;
-use App\Forms\LoginFormFactory;
 use App\Models\UserModel;
-use Contributte\FormsBootstrap\Enums\RenderMode;
 use stdClass;
 use Nette\Application\Attributes\Persistent;
 
@@ -29,8 +26,14 @@ final class LoginPresenter extends Frontend {
         }
     }
 	
-	protected function createComponentLoginForm():BootstrapForm {
-		$form = (new LoginFormFactory)->login();
+	protected function createComponentLoginForm(): Form {
+		$form = new Form;
+
+		$form->addText('username', 'Username')->setRequired("Campo obbligatorio.");
+		$form->addPassword('password', 'Password')->setRequired("Campo obbligatorio.");
+		$form->addSubmit('submit','Esegui login');
+
+
 		$form->onValidate[] = [$this, 'formLoginValidation'];
 		$form->onSuccess[] = [$this, 'formLoginSucceeded'];
 		return $form;

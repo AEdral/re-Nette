@@ -1,22 +1,22 @@
 {block content}
-<main>
-<div class="d-flex flex-column flex-lg-row-fluid pt-20 px-20">
-	<div class="text-center mb-20">
-		<h1 class="text-dark mb-3">Accedi a {$appName}</h1>
-	</div>
-	
-	<div class="text-left">
-		{control loginForm}
-	</div>
-</div>
-</main>
+    <h1>Login</h1>
 
+    <form n:name="loginForm">
+        <div>
+            <label>Username:</label>
+            <input n:name="username">
+        </div>
 
-<!--begin::Body-->
+        <div>
+            <label>Password:</label>
+            <input n:name="password">
+        </div>
 
-
+        <div>
+            <input type="submit" value="Login">
+        </div>
+    </form>
 {/block}
-
 {block scripts}
 	<!--begin::Custom Javascript(used for this page only)-->
 	<script src="{$basePath}/assets/js/custom/authentication/sign-in/general.js"></script>
