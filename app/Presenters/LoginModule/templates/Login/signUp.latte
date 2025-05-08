@@ -1,0 +1,67 @@
+{block content}
+
+
+					<!--begin::Content-->
+					<div class="d-flex flex-center flex-column flex-column-fluid">
+						<!--begin::Wrapper-->
+						
+						<div class="w-lg-600px p-10 p-lg-15 mx-auto">
+							<!--begin::Form-->
+
+				
+								<div class="text-left">
+									{*control signUpForm*}
+								</div>
+	
+
+							
+								<!--begin::Heading-->
+								<div class="mb-10 text-center">
+									<!--begin::Title-->
+									<h1 class="text-dark mb-3">Create an Account</h1>
+									<!--end::Title-->
+									<!--begin::Link-->
+									<div class="text-gray-400 fw-semibold fs-4">Already have an account?
+									<a n:href="Login:" class="link-primary fw-bold">Sign in here</a></div>
+									<!--end::Link-->
+								</div>
+								
+								{control signUpForm}
+								<!--end::Heading-->
+								<!--begin::Action-->
+								
+								<!--
+								<button type="button" class="btn btn-light-primary fw-bold w-100 mb-10">
+								<img alt="Logo" src="{$basePath}/assets/media/svg/brand-logos/google-icon.svg" class="h-20px me-3" />Sign in with Google</button>
+								-->
+								<!--end::Action-->
+
+
+
+								<!--begin::Separator-->
+								<!--
+								<div class="d-flex align-items-center mb-10">
+									<div class="border-bottom border-gray-300 mw-50 w-100"></div>
+									<span class="fw-semibold text-gray-400 fs-7 mx-2">OR</span>
+									<div class="border-bottom border-gray-300 mw-50 w-100"></div>
+								</div>
+
+								-->
+								<!--end::Separator-->
+								<!--begin::Input group-->
+								
+							
+						
+						</div>
+						<!--end::Wrapper-->
+					</div>
+					<!--end::Content-->
+
+{/block}
+
+{block scripts}
+	{include parent}
+	<!--begin::Custom Javascript(used for this page only)-->
+	<!--script src="{$basePath}/assets/js/custom/authentication/sign-up/general.js"></script-->
+	<!--end::Custom Javascript-->
+{/block}

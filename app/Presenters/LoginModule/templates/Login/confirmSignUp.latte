@@ -1,0 +1,38 @@
+{block content}
+<div class="d-flex flex-column flex-lg-row-fluid py-10">
+    <!--begin::Content-->
+    <div class="d-flex flex-center flex-column flex-column-fluid">
+        <!--begin::Wrapper-->
+        <div class="w-lg-600px p-10 p-lg-15 mx-auto">
+            <!--begin::Heading-->
+            <div class="text-center mb-20">
+                <!--begin::Title-->
+                <h1 class="text-dark mb-3">Your registration request has been sent!</h1>
+                <!--end::Title-->
+                <div class="fw-semibold fs-3 text-muted mb-15">We sent an email to the admin.<br> Your account will be activated soon!</div>
+					<!--end::Message-->
+					<!--begin::Action-->
+					<div class="text-center">
+						<a n:href="Login:default" class="btn btn-primary btn-lg fw-bold">Sign In</a>
+					</div>
+					<!--end::Action-->
+					<!--begin::Action-->
+					<div class="text-gray-700 fw-semibold fs-4 pt-7">Did’t receive an email?
+					<a n:href="Login:sign-up" class="text-primary fw-bold">Try Again</a></div>
+                <!--end::Link-->
+            </div>
+            <!--begin::Heading-->
+               
+        </div>
+        <!--end::Wrapper-->
+    </div>
+    <!--end::Content-->
+</div>
+{/block}
+
+{block scripts}
+	{include parent}
+	<!--begin::Custom Javascript(used for this page only)-->
+	<script src="{$basePath}/assets/js/custom/authentication/sign-in/general.js"></script>
+	<!--end::Custom Javascript-->
+{/block}

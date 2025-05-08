@@ -1,8 +1,8 @@
 services:
-	- Nette\Security\MyAuthenticator(@database.remote.context)
-	- Nette\Security\MyAuthorizator(@database.remote.context)
+	- Nette\Security\MyAuthenticator(@database.default.context)
+	- Nette\Security\MyAuthorizator(@database.default.context)
 	- App\Router\RouterFactory::createRouter
-	- App\Models\RemoteModel(@database.remote.context)
+	- App\Models\RemoteModel(@database.default.context)
 	- App\Presenters\LoginPresenter(%adminEmail%)
 	- App\Classes\MailManager(%mail%)
 

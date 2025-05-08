@@ -17,7 +17,7 @@ read -p "Email (MAIL) [opzionale]: " MAIL
 # === 2. INFO SISTEMA ===
 
 PROJECT_PATH=$(pwd)
-CONFIG_PATH="$PROJECT_PATH/app/config"
+CONFIG_PATH="$PROJECT_PATH/config"
 
 # === 3. CREA local.neon ===
 
