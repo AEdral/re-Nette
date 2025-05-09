@@ -35,6 +35,12 @@ class DefaultModel {
 
 
 
+
+    public function getAllMusicAlbums(){
+        return $this->query('select * from music_albums');
+    }
+
+
     public function arrayToRow(array $array): Row {
         $row = new Row();
         foreach ($array as $key => $value) {

@@ -13,14 +13,9 @@ use App\Classes\MyHashids;
 class Backend extends Nette\Application\UI\Presenter {
 
 	public $authorizator;
-	private $cookies;
 	protected $hashids;
 
-	private $home_links = [];
-	private $export_links = [];
-	private $report_links = [];
-	private $admin_links = [];
-	
+
 	public function __construct( /*UserModel $userModel1*/ ) { 
 	}
 	
@@ -54,16 +49,23 @@ class Backend extends Nette\Application\UI\Presenter {
 
 		$navbar_links = [
 			['nome' => "Home", 'link' => "Home:default", 'title' => true],
-			['nome' => "Pagina 1", 'link' => "Home:default", 'title' => false]
+			['nome' => "Default", 'link' => "Home:default", 'title' => false],
+			['nome' => "Table Example", 'link' => "Home:table", 'title' => false],
 		];
 		
 
+		$option_links = [
+			['nome' => "Logout", 'link' => "Login:logout", 'title' => false],
+		];
+
 		$this->template->navbar = $navbar_links;
+		$this->template->options = $option_links;
+		
 		
 
 		$this->template->section = strtolower($this->name);
 		$this->template->page = ($this->action!="default")?$this->action:"";
-		$this->cookies = $cookies = $this->getHttpRequest()->getCookies();
+		//$this->cookies = $cookies = $this->getHttpRequest()->getCookies();
 		//$this->hashids = new MyHashids();
 		$this->template->section = $this->getSession('comuneSession');
 		//bdump($this->getHttpRequest()->getUrl());
