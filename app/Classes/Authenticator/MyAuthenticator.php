@@ -21,22 +21,21 @@ class MyAuthenticator implements Nette\Security\Authenticator {
 
 	public function authenticate(string $user, string $password): IIdentity {
 		$row = $this->database->table(USERSTABLE)->where('username', $user)->fetch();
-		$password = addslashes($password); //escape degli apici nella password (test" -> test\")
-
+		
 		if (!$row) { //utente non esiste
 			throw new AuthenticationException('Email o password errate.');
 		}
 
-		if ($row->password != md5($password)){ //password sbagliata
-			throw new AuthenticationException('Email o password errate.');
+		if (!$this->passwords->verify($password, $row->password)) {
+			throw new AuthenticationException('Password errata.');
 		}
 		
 		return new SimpleIdentity (
 			$row->id,
-			$row->ruolo,
+			//$row->ruolo,
 			[	
-				'utente' => $row->utente,
-				'ruolo' => $row->ruolo
+				'utente' => $row->username,
+				'email' => $row->email
 			]
 		);
 	}

@@ -43,6 +43,7 @@ constants:
 	BANTABLE: ''
 	RECOVERYTABLE: ''
 	UPLOADSDIR: ''
+	LOGO: 'pokeball-icon.png'
 	DEBUG: TRUE
 	RUOLI:
 		admin: 'admin'

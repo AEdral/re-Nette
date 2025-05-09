@@ -68,12 +68,9 @@ final class LoginPresenter extends Frontend {
             // Mostra i dati ricevuti dal form
             bdump($data, 'Dati del form');
     
-            // Tentativo di login
-            $hashedPassword = $data["password"]; // ⚠️ Nota: se la password è in chiaro, NON è già hashata
-            bdump($hashedPassword, 'Password fornita');
-    
-            $this->getUser()->login($data["username"], $hashedPassword);
-            bdump("Login riuscito con username: {$data['username']}");
+            // Tentativo di login (con password in chiaro)
+            $this->getUser()->login($data->username, $data->password);
+            bdump("Login riuscito con username: {$data->username}");
     
             // Imposta l'authorizator
             $authorizator = new MyAuthorizator();
@@ -103,6 +100,7 @@ final class LoginPresenter extends Frontend {
     
         bdump("Fine formLoginSucceeded");
     }
+    
     
 
     
@@ -151,7 +149,8 @@ final class LoginPresenter extends Frontend {
             return;
         }
 
-        $hashedPassword = $data->password;
+        $hashedPassword = $this->passwords->hash($data->password);
+
 
         // Crea il nuovo utente
         $this->userModel->createUser([

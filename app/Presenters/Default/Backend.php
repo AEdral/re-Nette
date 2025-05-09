@@ -37,7 +37,7 @@ class Backend extends Nette\Application\UI\Presenter {
             $this->error("forbidden",403);
 
 		
-		
+		$this->template->logo = LOGO;
 		$this->template->appName = APPNAME;
 		$this->template->basePath = APPURL;
 
@@ -51,77 +51,16 @@ class Backend extends Nette\Application\UI\Presenter {
 		   del sito "Nome" (se è un presenter sarà ad esempio NomePresenter:default). Questo link può essere
 		   evidenziato nei file latte con un if */
 
-		array_push($this->admin_links, ['nome' => "Indice", 'link' => "Indice:default", 'title' => true]);
-		array_push($this->admin_links, ['nome' => "Indice Database", 'link' => "Indice:default", 'title' => false]);
+
+		$navbar_links = [
+			['nome' => "Home", 'link' => "Home:default", 'title' => true],
+			['nome' => "Pagina 1", 'link' => "Home:default", 'title' => false]
+		];
 		
-	
-		$this->addExportLink("Export","",true);
-		$this->addExportLink("Pratiche","ExportManager:pratiche");
-		$this->addExportLink("Notifiche","ExportManager:notifiche");
-		$this->addExportLink("Versamenti","ExportManager:versamenti");
-		$this->addExportLink("Fasi","Diagnostic:stati");
-		$this->addExportLink("Attività","ExportManager:log");
 
-
-		$this->addExportLink("Import","",true);
-		$this->addExportLink("Aggiornamento Fasi","Diagnostic:aggiornafasi");
-		$this->addExportLink("Aggiornamento Anagrafiche","ImportManager:anagrafiche");
-
-
-		$this->addExportLink("Gestione","",true);
-		$this->addExportLink("Rendicontazione","ExportManager:rendicontazione");
-
-		/*
-		$this->addReportLink("Reports","Report:default", true);
-		$this->addReportLink("Pratiche","Report:pratiche");
-		*/
-		//inserimento manuale senza funzione apposita
-		#array_push($this->admin_links, ['nome' => "Admin", 'link' => "Admin:default", 'title' => true]);
-		#array_push($this->admin_links, ['nome' => "Dati statistici", 'link' => "Admin:statistics", 'title' => false]);
-		#array_push($this->admin_links, ['nome' => "Dati economici", 'link' => "Admin:economics", 'title' => false]);
-		/*
-		array_push($this->admin_links, ['nome' => "Programmazione settimanale", 'link' => "Admin:programmazione", 'title' => false]);
-		*/
-
-
-		#array_push($this->admin_links, ['nome' => "Diagnostica fasi", 'link' => "Diagnostic:fasi", 'title' => false]);
-		/*
-		array_push($this->admin_links, ['nome' => "Comuni", 'link' => "Indice:comuni", 'title' => false]);
-		array_push($this->admin_links, ['nome' => "Pratiche", 'link' => "Indice:pratiche", 'title' => false]);
-		array_push($this->admin_links, ['nome' => "Sot", 'link' => "Indice:sot", 'title' => false]);
-		array_push($this->admin_links, ['nome' => "Anagrafiche", 'link' => "Indice:anagrafiche", 'title' => false]);
-		array_push($this->admin_links, ['nome' => "Transazioni", 'link' => "Indice:transazioni", 'title' => false]);
-		array_push($this->admin_links, ['nome' => "Versamenti", 'link' => "Indice:versamenti", 'title' => false]);
-		array_push($this->admin_links, ['nome' => "Documenti Abuso", 'link' => "Indice:documenti", 'title' => false]);
-		array_push($this->admin_links, ['nome' => "Fabbricati", 'link' => "Indice:fabbricati", 'title' => false]);
-		array_push($this->admin_links, ['nome' => "Terreni", 'link' => "Indice:terreni", 'title' => false]);
-		*/
-		//array_push($this->admin_links, ['nome' => "Alloggi", 'link' => "Indice:alloggi", 'title' => false]);
-
-
+		$this->template->navbar = $navbar_links;
 		
-        $this->template->navbar = array_merge($this->admin_links, $this->home_links, $this->export_links, $this->report_links);
-		$this->template->home_links = $this->home_links;
-		$this->template->export_links = $this->export_links;
-		$this->template->report_links = $this->report_links;
-		$this->template->admin_links = $this->admin_links;
 
-		/*
-		if(!$this->getUser()->isLoggedIn()){
-			$this->redirect('Home:default',['backlink' => $this->storeRequest()]);
-		
-        }
-		*/
-        
-		/*
-		$this->authorizator = new MyAuthorizator();
-		$this->getUser()->setAuthorizator($this->authorizator);
-		if(!$this->getUser()->isAllowed($this->name,$this->action)){
-			$this->error("forbidden",403);
-			
-		}
-		*/
-		
 		$this->template->section = strtolower($this->name);
 		$this->template->page = ($this->action!="default")?$this->action:"";
 		$this->cookies = $cookies = $this->getHttpRequest()->getCookies();
@@ -151,20 +90,6 @@ class Backend extends Nette\Application\UI\Presenter {
         
 	}
 
-	private function addLink($nome, $link, $title=false){
-        array_push($this->export_links, ['nome' => $nome, 'link' => $link, 'title' => $title]);
-    } 
-	private function addHomeLink($nome, $link, $title=false){
-        array_push($this->home_links, ['nome' => $nome, 'link' => $link, 'title' => $title]);
-    } 
-	private function addExportLink($nome, $link, $title=false){
-        array_push($this->export_links, ['nome' => $nome, 'link' => $link, 'title' => $title]);
-    } 
-	private function addReportLink($nome, $link, $title=false){
-        array_push($this->report_links, ['nome' => $nome, 'link' => $link, 'title' => $title]);
-    } 
-
-        
 
 	
 	protected function beforeRender(): void {

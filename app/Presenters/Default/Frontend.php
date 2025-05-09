@@ -16,6 +16,7 @@ class Frontend extends Nette\Application\UI\Presenter {
     protected function startup(): void {
         parent::startup();
         $this->template->appName = APPNAME;
+        $this->template->logo = LOGO;
         //$this->hashids = new MyHashids();
     }
 
