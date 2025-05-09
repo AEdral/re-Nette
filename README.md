@@ -1,4 +1,4 @@
-# re-Nette ![Logo](www/assets/media/logos/pokeball-icon.png)
+# re-Nette ![WEBSITE](www/assets/img/re-nette.png)
 
 **re-Nette** is a starter template for PHP applications built using the [Nette Framework](https://nette.org/).  
 It provides a clean, minimal structure to get up and running quickly with authentication, user registration, and a basic presenter layout.
