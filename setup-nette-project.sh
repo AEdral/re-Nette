@@ -8,8 +8,8 @@ while [ -z "$APPNAME" ]; do
     read -p "Nome progetto (APPNAME): " APPNAME
 done
 
-read -p "Database DSN (DB_DNS): [opzionale]" DB_DNS
-read -p "Database User (DB_USER): [opzionale]: " DB_USER
+read -p "Database DSN (DB_DNS) [opzionale]:" DB_DNS
+read -p "Database User (DB_USER) [opzionale]: " DB_USER
 read -s -p "Database Password (DB_PASSWORD): " DB_PASSWORD
 echo
 read -p "Email (MAIL) [opzionale]: " MAIL
@@ -43,7 +43,7 @@ constants:
 	APPURL: 'https://${APPNAME}.local/'
 	APPNAME: '${APPNAME}'
 	APPEMAIL: '${MAIL}'
-	USERSTABLE: 'utenti'
+	USERSTABLE: 'users'
 	BANTABLE: 'banned'
 	RECOVERYTABLE: 'recovery'
 	UPLOADSDIR: 'uploads'
