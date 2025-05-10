@@ -35,11 +35,13 @@ class DefaultModel {
 
 
 
-
-    public function getAllMusicAlbums(){
-        return $this->query('select * from music_albums');
+    public function getAllMusicAlbums(): array {
+        $result = $this->database->query('SELECT * FROM music_albums');
+        return $result->fetchAll(); // restituisce array di Row
     }
+    
 
+    
 
     public function arrayToRow(array $array): Row {
         $row = new Row();
