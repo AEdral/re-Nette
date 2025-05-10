@@ -19,7 +19,18 @@ read -p "Email (MAIL) [opzionale]: " MAIL
 PROJECT_PATH=$(pwd)
 CONFIG_PATH="$PROJECT_PATH/config"
 
-# === 3. CREA local.neon ===
+# === 3. GESTIONE VALORI DEFAULT DATABASE ===
+
+# Se DB_DNS e DB_USER sono vuoti, impostiamo i valori predefiniti
+if [ -z "$DB_DNS" ]; then
+    DB_DNS="mysql:host=127.0.0.1;dbname=sandbox"
+fi
+
+if [ -z "$DB_USER" ]; then
+    DB_USER="root"
+fi
+
+# === 4. CREA local.neon ===
 
 mkdir -p "$CONFIG_PATH"
 
@@ -61,7 +72,7 @@ database:
 		password: '${DB_PASSWORD}' 
 EOF
 
-# === 4. CREA VirtualHost Apache ===
+# === 5. CREA VirtualHost Apache ===
 
 VHOST_FILE="/etc/apache2/sites-available/${APPNAME}-ssl.conf"
 sudo tee "$VHOST_FILE" > /dev/null <<EOF
@@ -93,7 +104,7 @@ sudo tee "$VHOST_FILE" > /dev/null <<EOF
 </IfModule>
 EOF
 
-# === 5. MODIFICA /etc/hosts CON INDENTAZIONE ===
+# === 6. MODIFICA /etc/hosts CON INDENTAZIONE ===
 
 HOST_ENTRY="127.0.0.1       ${APPNAME}.local"
 if ! grep -q "${APPNAME}.local" /etc/hosts; then
@@ -104,13 +115,14 @@ else
     echo "/etc/hosts già contiene ${APPNAME}.local"
 fi
 
-# === 6. PERMESSI ===
+# === 7. PERMESSI ===
 
 #sudo chmod -R 777 "${PROJECT_PATH}"
 
-# === 7. ABILITA SITO E RIAVVIA ===
+# === 8. ABILITA SITO E RIAVVIA ===
 
 sudo a2ensite "${APPNAME}-ssl.conf"
 sudo systemctl restart apache2
 
 echo "✅ Configurazione completata per il progetto $APPNAME"
+
