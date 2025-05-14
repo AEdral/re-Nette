@@ -35,7 +35,16 @@
                 <thead class="table-light">
                     <tr>
                         {foreach $columns as $column}
-                            <th>{$column}</th>
+                            {var $isCurrentSort = ($column === $sortBy)}
+                            {var $newSortDir = ($isCurrentSort && $sortDir === 'asc') ? 'desc' : 'asc'}
+                            <th>
+                                <a n:href="this, current => 1, limit => $limit, search => $search, sortBy => $column, sortDir => $newSortDir" class="text-decoration-none text-dark">
+                                    {$column}
+                                    {if $isCurrentSort}
+                                        <span>{if $sortDir === 'asc'}▲{else}▼{/if}</span>
+                                    {/if}
+                                </a>
+                            </th>
                         {/foreach}
                     </tr>
                 </thead>

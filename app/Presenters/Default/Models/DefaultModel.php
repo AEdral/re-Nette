@@ -39,6 +39,11 @@ class DefaultModel {
         $result = $this->database->query('SELECT * FROM music_albums');
         return $result->fetchAll(); // restituisce array di Row
     }
+
+    public function getMusicAlbumsByGenre(): array {
+        $result = $this->database->query('SELECT genre,count(id) as amount FROM music_albums GROUP BY genre');
+        return $result->fetchAll(); // restituisce array di Row
+    }
     
 
     

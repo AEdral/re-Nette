@@ -56,49 +56,28 @@ final class HomePresenter extends Backend {
 
     public function renderDashboard(){
         $this->template->title = "Dashboard";
+
+        $this->template->data = $this->model->getMusicAlbumsByGenre();
+        
     }
 
-    public function renderTable(int $current = 1, int $limit = 10, ?string $search = null): void
+    public function renderTable(int $current = 1, int $limit = 10, ?string $search = null, ?string $sortBy = null, string $sortDir = 'asc'): void
     {
-
         $this->template->title = "Custom Datatable example";
-        $dataset_example = $this->model->getAllMusicAlbums();
-/*
-        if ($search !== null && trim($search) !== '') {
-            $searchLower = mb_strtolower(trim($search));
-
-            $dataset_example = array_filter($dataset_example, function ($row) use ($searchLower) {
-                foreach ($row as $value) {
-                    if (stripos((string)$value, $searchLower) !== false) {
-                        return true;
-                    }
-                }
-                return false;
-            });
-
-            $dataset_example = array_values($dataset_example);
-        }
-
-        $totalRecords = count($dataset_example);
-        $offset = ($current - 1) * $limit;
-        $pageData = array_slice($dataset_example, $offset, $limit);
-        
-        $columns = ($totalRecords>0) ? array_keys((array)$dataset_example[0] ?? []) : [];
-*/
-        $table = $this->table($this->model->getAllMusicAlbums(), $current, $limit, $search);
-        
-        
+    
+        $table = $this->table($this->model->getAllMusicAlbums(), $current, $limit, $search, $sortBy, $sortDir);
+    
         $this->template->records = $table['records'];
         $this->template->columns = $table['columns'];
         $this->template->totalRecords = $table['totalRecords'];
         $this->template->current = $table['current'];
         $this->template->limit = $table['limit'];
         $this->template->search = $table['search'];
-        
+        $this->template->sortBy = $table['sortBy'];
+        $this->template->sortDir = $table['sortDir'];
     }
-
-
-    public function table($dataset = [], int $current = 1, int $limit = 10, ?string $search = null){
+    
+    public function table($dataset = [], int $current = 1, int $limit = 10, ?string $search = null, ?string $sortBy = null, string $sortDir = 'asc') {
         if ($search !== null && trim($search) !== '') {
             $searchLower = mb_strtolower(trim($search));
             $dataset = array_filter($dataset, function ($row) use ($searchLower) {
@@ -109,20 +88,41 @@ final class HomePresenter extends Backend {
                 }
                 return false;
             });
-
+    
             $dataset = array_values($dataset);
         }
+    
+        if ($sortBy !== null) {
+            usort($dataset, function ($a, $b) use ($sortBy, $sortDir) {
+                $valA = $a[$sortBy] ?? null;
+                $valB = $b[$sortBy] ?? null;
+    
+                if ($valA == $valB) return 0;
+    
+                if ($sortDir === 'asc') {
+                    return ($valA < $valB) ? -1 : 1;
+                } else {
+                    return ($valA > $valB) ? -1 : 1;
+                }
+            });
+        }
+    
         $totalRecords = count($dataset);
         $offset = ($current - 1) * $limit;
         $pageData = array_slice($dataset, $offset, $limit);
-        $columns = ($totalRecords>0) ? array_keys((array)$dataset[0] ?? []) : [];
-        return ['records' => $pageData,
-                'totalRecords' => $totalRecords,
-                'columns' => $columns,
-                'limit' => $limit,
-                'search' => $search,
-                'current' => $current
+        $columns = ($totalRecords > 0) ? array_keys((array)$dataset[0] ?? []) : [];
+    
+        return [
+            'records' => $pageData,
+            'totalRecords' => $totalRecords,
+            'columns' => $columns,
+            'limit' => $limit,
+            'search' => $search,
+            'current' => $current,
+            'sortBy' => $sortBy,
+            'sortDir' => $sortDir
         ];
     }
+    
 
 }

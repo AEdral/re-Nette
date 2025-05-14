@@ -1,0 +1,63 @@
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const X_labels = [];
+    const y_values = [];
+
+    {foreach $data as $row}        
+        X_labels.push({$row->genre});
+        y_values.push({$row->amount});
+    {/foreach}
+
+    // Area Chart
+    const ctxArea = document.getElementById("myAreaChart").getContext('2d');
+    new Chart(ctxArea, {
+        type: 'line',
+        data: {
+            labels: X_labels,
+            datasets: [{
+                label: 'Albums by Genre',
+                data: y_values,
+                fill: true,
+                backgroundColor: 'rgba(78, 115, 223, 0.2)',
+                borderColor: 'rgba(78, 115, 223, 1)',
+                tension: 0.3
+            }]
+        },
+        options: {
+            plugins: {
+                legend: {
+                    display: false // 👈 solo se più di uno
+                }
+            },
+            scales: {
+                y: { beginAtZero: true }
+            }
+        }
+    });
+
+    // Bar Chart
+    const ctxBar = document.getElementById("myBarChart").getContext('2d');
+    new Chart(ctxBar, {
+        type: 'bar',
+        data: {
+            labels: X_labels,
+            datasets: [{
+                label: 'Albums by Genre',
+                data: y_values,
+                backgroundColor: 'rgba(54, 185, 204, 0.7)',
+                borderColor: 'rgba(54, 185, 204, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            plugins: {
+                legend: {
+                    display: false // 👈 solo se più di uno
+                }
+            },
+            scales: {
+                y: { beginAtZero: true }
+            }
+        }
+    });
+</script>

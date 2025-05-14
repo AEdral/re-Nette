@@ -51,6 +51,7 @@ class Backend extends Nette\Application\UI\Presenter {
 			['nome' => "Home", 'link' => "Home:default", 'title' => true],
 			['nome' => "Default", 'link' => "Home:default", 'title' => false],
 			['nome' => "Table Example", 'link' => "Home:table", 'title' => false],
+			['nome' => "Dashboard Example", 'link' => "Home:dashboard", 'title' => false],
 		];
 		
 
