@@ -15,6 +15,7 @@ use App\Models\DefaultModel;
 use Nette\Application\Responses\FileResponse;
 use App\Models\ExportModel;
 use Nette;
+use Shuchkin\SimpleXLSX;
 use Nette\Forms\Form as FormsForm;
 use Nette\Utils\Type;
 
@@ -174,5 +175,54 @@ final class HomePresenter extends Backend {
         }           
     }
     
+
+
+    public function documentoUploadNew(Array &$data){
+
+        $fase_dest = $data['fase'];
+        $upload = $data['documento'];
+        if(!$upload->isOk()) return false;
+        $nomeFile = $upload->getSanitizedName();
+        //$targetFile = __DIR__. "/imports/csv/" . $nomeFile;
+        $import_dir = dirname(dirname(__DIR__))."/xlsx/";
+        $file = "import.xlsx";
+        $targetFile = $import_dir.$file;
+        if (!is_dir($import_dir)) {
+            mkdir($import_dir, 0777, true);
+        }
+        // Se il file non esiste, crealo con permessi di lettura e scrittura
+        if (!file_exists($targetFile)) {
+            touch($targetFile);
+        }
+        chmod($targetFile, 0666); // Permessi di lettura e scrittura per tutti
+
+        
+        if($upload->move($targetFile)){ 
+            //$this->importModel->truncateAnagraficheDaAggiornare();
+            //$array2 = $this->rendModel->getRendicontazioneImport();
+            if($xlsx = SimpleXLSX::parse($targetFile)){
+                $xlsx->setDateTimeFormat('Y-m-d');
+                $array = array();
+                $chiavi = array();
+                $rows = $xlsx->rows();
+                foreach($rows[0] as $chiave) {
+                    $chiavi[] = $chiave;
+                }
+                //prendo i nomi della prima row e me li salvo come chiavi
+                //bdump($chiavi);
+                foreach(array_slice($rows, 1)  as $riga_excel) {
+                    $row = [];
+                    foreach($riga_excel as $key => $value) {
+                        $row[$chiavi[$key]] = $value;
+                    }
+                    $array[] = $row;
+                }
+                //bdump($diff);
+                return $this->updateModel->aggiornaFasiManuale($array,$fase_dest);
+            }
+            return false;
+        }
+        return false;
+    }
 
 }
