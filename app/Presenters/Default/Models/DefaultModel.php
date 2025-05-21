@@ -46,6 +46,33 @@ class DefaultModel {
     }
     
 
+    public function exportExcel(array $data, string $name = '', string $dir = ''): string {
+        if ($name == '') {
+            $filename = 'export_' . date('d-m-Y_H-i-s') . '.xlsx';
+        } elseif (substr($name, -5) == '.xlsx') {
+            $filename = $name;
+        } else {
+            $filename = $name . '.xlsx';
+        }
+
+        if ($dir == '') $dir = dirname(dirname(dirname(__DIR__)))."/xlsx/";
+        $file = $dir . $filename;
+
+        $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+
+        $headings = array_keys((array)$data[0]);
+        $sheet->fromArray($headings, null, 'A1');
+
+        foreach ($data as $i => $row) {
+            $sheet->fromArray(array_values((array)$row), null, 'A' . ($i + 2));
+        }
+
+        $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+        $writer->save($file);
+
+        return $file;
+    }
     
 
     public function arrayToRow(array $array): Row {

@@ -11,6 +11,8 @@ use stdClass;
 use Nette\Utils\DateTime;
 use App\Classes\AiAssistant;
 use App\Models\DefaultModel;
+
+use Nette\Application\Responses\FileResponse;
 use App\Models\ExportModel;
 use Nette;
 use Nette\Forms\Form as FormsForm;
@@ -122,6 +124,54 @@ final class HomePresenter extends Backend {
             'sortBy' => $sortBy,
             'sortDir' => $sortDir
         ];
+    }
+
+    public function handleExportExcel(?string $search = null, ?string $sortBy = null, string $sortDir = 'asc'): void
+    {
+        // Recupera tutti i dati, non solo paginati
+        $dataset = $this->model->getAllMusicAlbums();
+
+        // Applica filtri e ordinamenti SENZA PAGINAZIONE
+        $filteredTable = $this->table($dataset, 1, PHP_INT_MAX, $search, $sortBy, $sortDir);
+
+        $this->exportExcel($filteredTable['records']);
+    }
+
+
+    public function exportExcel($dataset){
+
+        $export_dir = dirname(dirname(__DIR__))."/xlsx/";
+        
+        //$dir = __DIR__ . "/exports/xlsx/";
+        $file = "export.xlsx";
+        $filePath = $export_dir . $file;
+        // Assicurati che la cartella di destinazione esista
+        if (!is_dir($export_dir)) {
+            mkdir($export_dir, 0777, true);
+        }
+        
+        // Se il file non esiste, crealo con permessi di lettura e scrittura
+        if (!file_exists($filePath)) {
+            touch($filePath);
+        }
+        chmod($filePath, 0666); // Permessi di lettura e scrittura per tutti
+        
+        $this->model->exportExcel($dataset, $file, $export_dir);
+        $this->exportDownload($export_dir, $file);
+    }
+
+    public function exportDownload($dir,$nome_file){
+        $file = $dir.$nome_file;
+        $extension = mime_content_type($file);
+        if(is_file($file)){
+            $response = new FileResponse(
+                $file, 
+                $nome_file, 
+                $extension);
+                $this->sendResponse($response);
+        } else {
+            throw new Nette\FileNotFoundException($nome_file);
+        }           
     }
     
 

@@ -60,58 +60,68 @@
             </table>
         </div>
 
-        <nav aria-label="Pagination">
-            <ul class="pagination justify-content-center mt-4">
-                <li class="page-item {if $current <= 1}disabled{/if}">
-                    <a class="page-link" n:href="this, current => max($current - 1, 1), limit => $limit">&laquo;</a>
-                </li>
+        <div class="d-flex align-items-center justify-content-between mt-4 flex-wrap">
+            <nav aria-label="Pagination" class="mx-auto">
+                <ul class="pagination mb-0">
+                    <li class="page-item {if $current <= 1}disabled{/if}">
+                        <a class="page-link" n:href="this, current => max($current - 1, 1), limit => $limit">&laquo;</a>
+                    </li>
 
-                {if $totalPages <= 10}
-                    {for $i = 1; $i <= $totalPages; $i++}
-                        <li class="page-item {if $i === $current}active{/if}">
-                            <a class="page-link" n:href="this, current => $i, limit => $limit">{$i}</a>
-                        </li>
-                    {/for}
-                {else}
-                    {if $current <= 4}
-                        {for $i = 1; $i <= 5; $i++}
+                    {if $totalPages <= 10}
+                        {for $i = 1; $i <= $totalPages; $i++}
                             <li class="page-item {if $i === $current}active{/if}">
-                                <a class="page-link" n:href="this, current => $i, limit => $limit">{$i}</a>
-                            </li>
-                        {/for}
-                        <li class="page-item disabled"><span class="page-link">…</span></li>
-                        <li class="page-item">
-                            <a class="page-link" n:href="this, current => $totalPages, limit => $limit">{$totalPages}</a>
-                        </li>
-                    {elseif $current >= $totalPages - 4}
-                        <li class="page-item">
-                            <a class="page-link" n:href="this, current => 1, limit => $limit">1</a>
-                        </li>
-                        <li class="page-item disabled"><span class="page-link">…</span></li>
-                        {for $i = max($totalPages - 5, $current - 2); $i <= $totalPages; $i++}
-                            <li class="page-item {if $i == $current}active{/if}">
                                 <a class="page-link" n:href="this, current => $i, limit => $limit">{$i}</a>
                             </li>
                         {/for}
                     {else}
-                        <li class="page-item">
-                            <a class="page-link" n:href="this, current => 1, limit => $limit">1</a>
-                        </li>
-                        <li class="page-item disabled"><span class="page-link">…</span></li>
-                        {for $i = $current - 1; $i <= $current + 1; $i++}
-                            <li class="page-item {if $i === $current}active{/if}">
-                                <a class="page-link" n:href="this, current => $i, limit => $limit">{$i}</a>
+                        {if $current <= 4}
+                            {for $i = 1; $i <= 5; $i++}
+                                <li class="page-item {if $i === $current}active{/if}">
+                                    <a class="page-link" n:href="this, current => $i, limit => $limit">{$i}</a>
+                                </li>
+                            {/for}
+                            <li class="page-item disabled"><span class="page-link">…</span></li>
+                            <li class="page-item">
+                                <a class="page-link" n:href="this, current => $totalPages, limit => $limit">{$totalPages}</a>
                             </li>
-                        {/for}
-                        <li class="page-item disabled"><span class="page-link">…</span></li>
-                        <li class="page-item">
-                            <a class="page-link" n:href="this, current => $totalPages, limit => $limit">{$totalPages}</a>
-                        </li>
+                        {elseif $current >= $totalPages - 4}
+                            <li class="page-item">
+                                <a class="page-link" n:href="this, current => 1, limit => $limit">1</a>
+                            </li>
+                            <li class="page-item disabled"><span class="page-link">…</span></li>
+                            {for $i = max($totalPages - 5, $current - 2); $i <= $totalPages; $i++}
+                                <li class="page-item {if $i == $current}active{/if}">
+                                    <a class="page-link" n:href="this, current => $i, limit => $limit">{$i}</a>
+                                </li>
+                            {/for}
+                        {else}
+                            <li class="page-item">
+                                <a class="page-link" n:href="this, current => 1, limit => $limit">1</a>
+                            </li>
+                            <li class="page-item disabled"><span class="page-link">…</span></li>
+                            {for $i = $current - 1; $i <= $current + 1; $i++}
+                                <li class="page-item {if $i === $current}active{/if}">
+                                    <a class="page-link" n:href="this, current => $i, limit => $limit">{$i}</a>
+                                </li>
+                            {/for}
+                            <li class="page-item disabled"><span class="page-link">…</span></li>
+                            <li class="page-item">
+                                <a class="page-link" n:href="this, current => $totalPages, limit => $limit">{$totalPages}</a>
+                            </li>
+                        {/if}
                     {/if}
-                {/if}
 
-                <li class="page-item {if $current >= $totalPages}disabled{/if}">
-                    <a class="page-link" n:href="this, current => min($current + 1, $totalPages), limit => $limit">&raquo;</a>
-                </li>
-            </ul>
-        </nav>
+                    <li class="page-item {if $current >= $totalPages}disabled{/if}">
+                        <a class="page-link" n:href="this, current => min($current + 1, $totalPages), limit => $limit">&raquo;</a>
+                    </li>
+                </ul>
+            </nav>
+            <form method="post" action="{link exportExcel!}" class="ms-auto">
+                <input type="hidden" name="search" value="{$search}">
+                <input type="hidden" name="sortBy" value="{$sortBy}">
+                <input type="hidden" name="sortDir" value="{$sortDir}">
+                <button type="submit" class="btn btn-success">
+                    Export to Excel
+                </button>
+            </form>
+        </div>
