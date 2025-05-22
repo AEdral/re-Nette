@@ -56,6 +56,7 @@ class Backend extends Nette\Application\UI\Presenter {
 		
 
 		$option_links = [
+			['nome' => "Profile", 'link' => "Profile:default", 'title' => false],
 			['nome' => "Logout", 'link' => "Login:logout", 'title' => false],
 		];
 
