@@ -1,12 +1,12 @@
 
 
 <!--begin::Alert-->
-<div n:foreach="$flashes as $flash" n:class="alert, $flash->type, d-flex, align-items-center, mt-5, mb-5">
+<div n:foreach="$flashes as $flash" n:class="alert, $flash->type, alert-success , d-flex, align-items-center, mt-5, mb-5">
     <!--begin::Icon-->
     {switch $flash->type}
 			{case "alert-danger"}
 			{default}
-				<i class="ki-duotone ki-shield-tick fs-2hx text-success me-4"><span class="path1"></span><span class="path2"></span></i>
+				<i class="ki-duotone  ki-shield-tick fs-2hx text-success me-4"><span class="path1"></span><span class="path2"></span></i>
     {/switch}
     <!--end::Icon-->
 

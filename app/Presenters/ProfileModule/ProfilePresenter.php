@@ -6,7 +6,7 @@ namespace App\Presenters;
 
 
 use App\Models\DefaultModel;
-
+use App\Models\UserModel;
 use Nette\Application\Responses\FileResponse;
 use Nette;
 use Shuchkin\SimpleXLSX;
@@ -15,27 +15,8 @@ final class ProfilePresenter extends Backend {
 
     
 
-    public $dataset_example = [
-        ["id" => 1, "name" => "John Doe", "email" => "john@example.com"],
-        ["id" => 2, "name" => "Jane Smith", "email" => "jane@example.com"],
-        ["id" => 3, "name" => "Bob Johnson", "email" => "bob@example.com"],
-        ["id" => 4, "name" => "Alice Brown", "email" => "alice@example.com"],
-        ["id" => 5, "name" => "Charlie Davis", "email" => "charlie@example.com"],
-        ["id" => 6, "name" => "Eva Wilson", "email" => "eva@example.com"],
-        ["id" => 7, "name" => "Frank Miller", "email" => "frank@example.com"],
-        ["id" => 8, "name" => "Grace Lee", "email" => "grace@example.com"],
-        ["id" => 9, "name" => "Henry Clark", "email" => "henry@example.com"],
-        ["id" => 10, "name" => "Isabel Turner", "email" => "isabel@example.com"],
-        ["id" => 11, "name" => "Jack Adams", "email" => "jack@example.com"],
-        ["id" => 12, "name" => "Karen White", "email" => "karen@example.com"],
-        ["id" => 13, "name" => "Larry Harris", "email" => "larry@example.com"],
-        ["id" => 14, "name" => "Megan Scott", "email" => "megan@example.com"],
-        ["id" => 15, "name" => "Nathan Baker", "email" => "nathan@example.com"],
-        ["id" => 16, "name" => "Olivia Green", "email" => "olivia@example.com"],
-    ];
-
-
-    public function __construct(private DefaultModel $model) {  
+    public function __construct(private DefaultModel $model, private UserModel $userModel) {
+        parent::__construct();
     }
 
     protected function startup(): void {
@@ -46,21 +27,76 @@ final class ProfilePresenter extends Backend {
         
 
     //DEEFAULT_______________________________________________________________
-    
+
     public function renderDefault(){    
         $this->template->title = "Profile";
-        $user = ['name' => 'John', 
-                 'surname' => 'Doe',
-                 'username' => 'johndoe',
-                 'email' => 'john@example.com',
-                 'role' => 'user admin'];
+
+        $userId = $this->getUser()->getId();
+        $user = $this->userModel->getUserById($userId);
+        
+
+        bdump($user);
+
 
         $this->template->cur_user = $user;
 
-        bdump(dirname(dirname(__DIR__)));
+
     }
 
 
+
+    public function handleProfileUpload(): void
+    {
+        $httpRequest = $this->getHttpRequest();
+        $file = $httpRequest->getFile('image');
+        $userId = $this->getUser()->getId();
+
+        if (!$file || !$file->isImage()) {
+            $this->sendJson(['success' => false, 'message' => 'File non valido.']);
+            return;
+        }
+
+        $allowedTypes = ['image/jpeg', 'image/png'];
+        if (!in_array($file->getContentType(), $allowedTypes)) {
+            $this->sendJson(['success' => false, 'message' => 'Formato immagine non supportato.']);
+            return;
+        }
+
+        $uploadDir = __DIR__ . '/../../../www/uploads/profile_pictures/' . $userId . '/';
+        if (!is_dir($uploadDir)) {
+            mkdir($uploadDir, 0755, true);
+        }
+        
+
+        $extension = pathinfo($file->getSanitizedName(), PATHINFO_EXTENSION);
+        $filename = uniqid() . '.' . $extension;
+        $path = $uploadDir . $filename;
+
+        $file->move($path);
+
+        $relativePath = 'uploads/profile_pictures/' . $userId . '/' . $filename;
+        $this->userModel->updateUser($userId, ['profile_image_path' => $relativePath]);
+
+        $this->sendJson([
+            'success' => true,
+            'newImageUrl' => $this->getHttpRequest()->getUrl()->getBasePath() . $relativePath,
+        ]);
+    }
+
+    public function handleRemoveProfileImage(): void
+    {
+        $userId = $this->getUser()->getId();
+
+
+
+        // Aggiorna il database
+        $this->userModel->updateUser($userId, [
+            'profile_image_path' => 'uploads/profile_pictures/default.png', // oppure imposta a 'assets/img/default-avatar.svg' se vuoi
+        ]);
+
+        $this->flashMessage('Foto del profilo rimossa con successo.', 'success');
+        $this->redirect('this');
+    }
 
 
 
@@ -69,15 +105,9 @@ final class ProfilePresenter extends Backend {
     //EDIT_______________________________________________________________
 
     public function actionEdit(): void {
-        // Recupera i dati utente
-        $user = [
-            'name' => 'John',
-            'surname' => 'Doe',
-            'username' => 'johndoe',
-            'email' => 'john@example.com',
-            'role' => 'user admin',
-        ];
-    
+        // Recupera i dati utente        
+        $userId = $this->getUser()->getId();
+        $user = $this->userModel->getUserById($userId);  
         $this->template->cur_user = $user;
     }
     
@@ -86,20 +116,42 @@ final class ProfilePresenter extends Backend {
     }
     
     public function handleSave(): void {
-        $name = $this->getHttpRequest()->getPost('name');
-        $surname = $this->getHttpRequest()->getPost('surname');
-        $username = $this->getHttpRequest()->getPost('username');
+        $userId = $this->getUser()->getId();
     
-        // Qui andrebbe il salvataggio nel DB. Per ora solo dump:
-        bdump([
+        $name = trim($this->getHttpRequest()->getPost('name'));
+        $surname = trim($this->getHttpRequest()->getPost('surname'));
+        $username = trim($this->getHttpRequest()->getPost('username'));
+    
+        // Controlli base
+        if (empty($name) || empty($surname) || empty($username)) {
+            $this->flashMessage('Tutti i campi sono obbligatori.', 'danger');
+            $this->redirect('edit');
+            return;
+        }
+    
+        // Controlla se lo username è già preso da un altro utente
+        if ($this->userModel->isUsernameTaken($username, $userId)) {
+            $this->flashMessage('Questo username è già in uso da un altro utente.', 'danger');
+            $this->redirect('edit');
+            return;
+        }
+    
+        // Salva le modifiche
+        $updated = $this->userModel->updateUser($userId, [
             'name' => $name,
             'surname' => $surname,
-            'username' => $username
+            'username' => $username,
         ]);
     
-        $this->flashMessage('Profilo aggiornato con successo.', 'success');
-        $this->redirect('default'); // Torna al profilo
+        if ($updated) {
+            $this->flashMessage('Profilo aggiornato con successo.', 'success');
+        } else {
+            $this->flashMessage('Nessuna modifica effettuata.', 'info');
+        }
+    
+        $this->redirect('default');
     }
+    
     
     
 

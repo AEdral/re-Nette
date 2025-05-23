@@ -51,4 +51,48 @@ class UserModel {
         return null;
     }
 
+
+    public function updateUser(int $id, array $data): bool
+    {
+        return $this->database->table('users')
+            ->where('id', $id)
+            ->update($data) > 0;
+    }
+
+    public function deleteUser(int $id): bool
+    {
+        return $this->database->table('users')
+            ->where('id', $id)
+            ->delete() > 0;
+    }
+
+    public function getAllUsers(): Nette\Database\Table\Selection
+    {
+        return $this->database->table('users');
+    }
+
+    public function changePassword(int $id, string $newPassword, Passwords $passwords): bool
+    {
+        $hashed = $passwords->hash($newPassword);
+        return $this->updateUser($id, ['password' => $hashed]);
+    }
+
+    public function isUsernameTaken(string $username, int $excludeUserId = null): bool
+    {
+        $query = $this->database->table('users')->where('username', $username);
+    
+        if ($excludeUserId !== null) {
+            $query->where('id != ?', $excludeUserId);
+        }
+    
+        return $query->count('*') > 0;
+    }
+    
+
+    public function isEmailTaken(string $email): bool
+    {
+        return (bool) $this->getUserByEmail($email);
+    }
+
+
 }

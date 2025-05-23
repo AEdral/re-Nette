@@ -13,47 +13,33 @@
           <div class="col-lg-4">
             <div class="card mb-4">
               <div class="card-body text-center">
-                <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava3.webp" alt="avatar"
-                  class="rounded-circle img-fluid" style="width: 150px;">
+                <div id="profile-picture-container" class="position-relative">
+                  <img src="{$basePath}/{$cur_user['profile_image_path']}" 
+                      alt="Profile Picture"
+                      id="profile-picture"
+                      class="rounded-circle"
+                      style="width: 150px; height: 150px; object-fit: cover; cursor: pointer;">
+
+                  <!-- Hidden file input -->
+                  <input type="file" id="file-input" class="d-none" accept="image/*">
+                  <div id="image-menu" class="position-absolute bg-white shadow p-2 rounded d-none" style="top: 0; left: 0;">
+                      <button class="btn btn-link p-0 mb-1" id="view-image">Visualizza</button><br>
+                      <button class="btn btn-link p-0 mb-1" id="edit-image">Modifica</button>
+                      {if $cur_user['profile_image_path'] != 'uploads/profile_pictures/default.png'}
+                        <button class="dropdown-item text-danger" id="remove-photo">Rimuovi</button>
+                      {else}
+                        <button class="dropdown-item text-danger" hidden id="remove-photo">Rimuovi</button>
+                      {/if}
+
+                  </div>
+                </div>
                 <h5 class="my-3">{$cur_user['name']} {$cur_user['surname']}</h5>
                 <p class="text-muted mb-1">{$cur_user['role']}</p>
                 <p class="text-muted mb-4">placeholder</p>
-                {*
-                <div class="d-flex justify-content-center mb-2">
-                  <button  type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary">Follow</button>
-                  <button  type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-outline-primary ms-1">Message</button>
-                </div>
-                *}
+
               </div>
             </div>
-            {*
-            <div class="card mb-4 mb-lg-0">
-              <div class="card-body p-0">
-                <ul class="list-group list-group-flush rounded-3">
-                  <li class="list-group-item d-flex justify-content-between align-items-center p-3">
-                    <i class="fas fa-globe fa-lg text-warning"></i>
-                    <p class="mb-0">https://mdbootstrap.com</p>
-                  </li>
-                  <li class="list-group-item d-flex justify-content-between align-items-center p-3">
-                    <i class="fab fa-github fa-lg text-body"></i>
-                    <p class="mb-0">mdbootstrap</p>
-                  </li>
-                  <li class="list-group-item d-flex justify-content-between align-items-center p-3">
-                    <i class="fab fa-twitter fa-lg" style="color: #55acee;"></i>
-                    <p class="mb-0">@mdbootstrap</p>
-                  </li>
-                  <li class="list-group-item d-flex justify-content-between align-items-center p-3">
-                    <i class="fab fa-instagram fa-lg" style="color: #ac2bac;"></i>
-                    <p class="mb-0">mdbootstrap</p>
-                  </li>
-                  <li class="list-group-item d-flex justify-content-between align-items-center p-3">
-                    <i class="fab fa-facebook-f fa-lg" style="color: #3b5998;"></i>
-                    <p class="mb-0">mdbootstrap</p>
-                  </li>
-                </ul>
-              </div>
-            </div>
-            *}
+
           </div>
           <div class="col-lg-8">
             <div class="card mb-4">
@@ -194,7 +180,58 @@
 </main>
 
 
+      <script>
+          const profilePic = document.getElementById('profile-picture');
+          const fileInput = document.getElementById('file-input');
+          const imageMenu = document.getElementById('image-menu');
 
+          profilePic.addEventListener('click', () => {
+              imageMenu.classList.toggle('d-none');
+          });
+
+          document.getElementById('view-image').addEventListener('click', () => {
+              window.open(profilePic.src, '_blank');
+          });
+
+          document.getElementById('edit-image').addEventListener('click', () => {
+              fileInput.click();
+          });
+
+          fileInput.addEventListener('change', async () => {
+              const file = fileInput.files[0];
+              if (!file) return;
+
+              const formData = new FormData();
+              formData.append('image', file);
+
+              const response = await fetch({link profileUpload!}, {
+                  method: 'POST',
+                  body: formData
+              });
+
+              const data = await response.json();
+              if (data.success) {
+                  profilePic.src = data.newImageUrl + '?t=' + new Date().getTime(); // Cache busting
+                  document.getElementById('remove-photo').hidden = false;
+              } else {
+                  alert(data.message);
+              }
+          });
+
+          document.getElementById('remove-photo').addEventListener('click', async () => {
+              if (!confirm('Sei sicuro di voler rimuovere la tua immagine del profilo?')) return;
+
+              const response = await fetch({link removeProfileImage!}, { method: 'POST' });
+
+              if (response.ok) {
+                  // Forza il reload dell'immagine
+                  document.getElementById('profile-picture').src = '/uploads/profile_pictures/default.png';
+                  document.getElementById('remove-photo').hidden = true;
+              } else {
+                  alert('Errore nella rimozione dell\'immagine.');
+              }
+          });
+      </script>
 
 {/block}
 {block scripts}
