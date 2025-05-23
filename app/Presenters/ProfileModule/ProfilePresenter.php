@@ -44,8 +44,19 @@ final class ProfilePresenter extends Backend {
     }
 
         
+
+    //DEEFAULT_______________________________________________________________
+    
     public function renderDefault(){    
-        $this->template->title = "Home";
+        $this->template->title = "Profile";
+        $user = ['name' => 'John', 
+                 'surname' => 'Doe',
+                 'username' => 'johndoe',
+                 'email' => 'john@example.com',
+                 'role' => 'user admin'];
+
+        $this->template->cur_user = $user;
+
         bdump(dirname(dirname(__DIR__)));
     }
 
@@ -53,152 +64,44 @@ final class ProfilePresenter extends Backend {
 
 
 
-    
 
-    
-    public function table($dataset = [], int $current = 1, int $limit = 10, ?string $search = null, ?string $sortBy = null, string $sortDir = 'asc') {
-        if ($search !== null && trim($search) !== '') {
-            $searchLower = mb_strtolower(trim($search));
-            $dataset = array_filter($dataset, function ($row) use ($searchLower) {
-                foreach ($row as $value) {
-                    if (stripos((string)$value, $searchLower) !== false) {
-                        return true;
-                    }
-                }
-                return false;
-            });
-    
-            $dataset = array_values($dataset);
-        }
-    
-        if ($sortBy !== null) {
-            usort($dataset, function ($a, $b) use ($sortBy, $sortDir) {
-                $valA = $a[$sortBy] ?? null;
-                $valB = $b[$sortBy] ?? null;
-    
-                if ($valA == $valB) return 0;
-    
-                if ($sortDir === 'asc') {
-                    return ($valA < $valB) ? -1 : 1;
-                } else {
-                    return ($valA > $valB) ? -1 : 1;
-                }
-            });
-        }
-    
-        $totalRecords = count($dataset);
-        $offset = ($current - 1) * $limit;
-        $pageData = array_slice($dataset, $offset, $limit);
-        $columns = ($totalRecords > 0) ? array_keys((array)$dataset[0] ?? []) : [];
-    
-        return [
-            'records' => $pageData,
-            'totalRecords' => $totalRecords,
-            'columns' => $columns,
-            'limit' => $limit,
-            'search' => $search,
-            'current' => $current,
-            'sortBy' => $sortBy,
-            'sortDir' => $sortDir
+
+    //EDIT_______________________________________________________________
+
+    public function actionEdit(): void {
+        // Recupera i dati utente
+        $user = [
+            'name' => 'John',
+            'surname' => 'Doe',
+            'username' => 'johndoe',
+            'email' => 'john@example.com',
+            'role' => 'user admin',
         ];
-    }
-
-    public function handleExportExcel(?string $search = null, ?string $sortBy = null, string $sortDir = 'asc'): void
-    {
-        // Recupera tutti i dati, non solo paginati
-        $dataset = $this->model->getAllMusicAlbums();
-
-        // Applica filtri e ordinamenti SENZA PAGINAZIONE
-        $filteredTable = $this->table($dataset, 1, PHP_INT_MAX, $search, $sortBy, $sortDir);
-
-        $this->exportExcel($filteredTable['records']);
-    }
-
-
-    public function exportExcel($dataset){
-
-        $export_dir = dirname(dirname(__DIR__))."/xlsx/";
-        
-        //$dir = __DIR__ . "/exports/xlsx/";
-        $file = "export.xlsx";
-        $filePath = $export_dir . $file;
-        // Assicurati che la cartella di destinazione esista
-        if (!is_dir($export_dir)) {
-            mkdir($export_dir, 0777, true);
-        }
-        
-        // Se il file non esiste, crealo con permessi di lettura e scrittura
-        if (!file_exists($filePath)) {
-            touch($filePath);
-        }
-        chmod($filePath, 0666); // Permessi di lettura e scrittura per tutti
-        
-        $this->model->exportExcel($dataset, $file, $export_dir);
-        $this->exportDownload($export_dir, $file);
-    }
-
-    public function exportDownload($dir,$nome_file){
-        $file = $dir.$nome_file;
-        $extension = mime_content_type($file);
-        if(is_file($file)){
-            $response = new FileResponse(
-                $file, 
-                $nome_file, 
-                $extension);
-                $this->sendResponse($response);
-        } else {
-            throw new Nette\FileNotFoundException($nome_file);
-        }           
+    
+        $this->template->cur_user = $user;
     }
     
-
-
-    public function documentoUploadNew(Array &$data){
-
-        $fase_dest = $data['fase'];
-        $upload = $data['documento'];
-        if(!$upload->isOk()) return false;
-        $nomeFile = $upload->getSanitizedName();
-        //$targetFile = __DIR__. "/imports/csv/" . $nomeFile;
-        $import_dir = dirname(dirname(__DIR__))."/xlsx/";
-        $file = "import.xlsx";
-        $targetFile = $import_dir.$file;
-        if (!is_dir($import_dir)) {
-            mkdir($import_dir, 0777, true);
-        }
-        // Se il file non esiste, crealo con permessi di lettura e scrittura
-        if (!file_exists($targetFile)) {
-            touch($targetFile);
-        }
-        chmod($targetFile, 0666); // Permessi di lettura e scrittura per tutti
-
-        
-        if($upload->move($targetFile)){ 
-            //$this->importModel->truncateAnagraficheDaAggiornare();
-            //$array2 = $this->rendModel->getRendicontazioneImport();
-            if($xlsx = SimpleXLSX::parse($targetFile)){
-                $xlsx->setDateTimeFormat('Y-m-d');
-                $array = array();
-                $chiavi = array();
-                $rows = $xlsx->rows();
-                foreach($rows[0] as $chiave) {
-                    $chiavi[] = $chiave;
-                }
-                //prendo i nomi della prima row e me li salvo come chiavi
-                //bdump($chiavi);
-                foreach(array_slice($rows, 1)  as $riga_excel) {
-                    $row = [];
-                    foreach($riga_excel as $key => $value) {
-                        $row[$chiavi[$key]] = $value;
-                    }
-                    $array[] = $row;
-                }
-                //bdump($diff);
-                return $this->updateModel->aggiornaFasiManuale($array,$fase_dest);
-            }
-            return false;
-        }
-        return false;
+    public function renderEdit(): void {
+        $this->template->title = "Modifica Profilo";
     }
+    
+    public function handleSave(): void {
+        $name = $this->getHttpRequest()->getPost('name');
+        $surname = $this->getHttpRequest()->getPost('surname');
+        $username = $this->getHttpRequest()->getPost('username');
+    
+        // Qui andrebbe il salvataggio nel DB. Per ora solo dump:
+        bdump([
+            'name' => $name,
+            'surname' => $surname,
+            'username' => $username
+        ]);
+    
+        $this->flashMessage('Profilo aggiornato con successo.', 'success');
+        $this->redirect('default'); // Torna al profilo
+    }
+    
+    
 
+    
 }

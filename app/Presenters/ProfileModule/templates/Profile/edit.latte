@@ -1,0 +1,24 @@
+{block content}
+<main>
+    <div class="container mt-5">
+        <h2 class="mb-4">{$title}</h2>
+
+        <form method="post" action="{link save!}">
+            <div class="mb-3">
+                <label for="name" class="form-label">Nome</label>
+                <input type="text" class="form-control" id="name" name="name" value="{$cur_user['name']}">
+            </div>
+            <div class="mb-3">
+                <label for="surname" class="form-label">Cognome</label>
+                <input type="text" class="form-control" id="surname" name="surname" value="{$cur_user['surname']}">
+            </div>
+            <div class="mb-3">
+                <label for="username" class="form-label">Username</label>
+                <input type="text" class="form-control" id="username" name="username" value="{$cur_user['username']}">
+            </div>
+
+            <button type="submit" class="btn btn-primary">Salva</button>
+        </form>
+    </div>
+</main>
+{/block}
